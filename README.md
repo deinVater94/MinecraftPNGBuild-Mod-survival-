@@ -1,4 +1,4 @@
-# PixelGuide – Fabric 26.3 – v0.3.0 (QUELLCODE, KEINE GETESTETE MOD-JAR)
+# PixelGuide – Fabric 26.3 – v0.3.2 (QUELLCODE, RENDER-FIX ZUM TESTEN)
 
 ## Für dein Pixel-Art-Bauprojekt
 
@@ -50,7 +50,7 @@ Eine Workflow-Datei `.github/workflows/build.yml` ist im Projekt enthalten.
    normalerweise automatisch; sonst per `Run workflow`.
 3. Wenn der Build **erfolgreich** ist, unter dem Workflow-Run bei **Artifacts** die
    `pixelguide-fabric-26.3-jar` herunterladen und entpacken.
-4. Die tatsächlich gebaute `pixelguide-0.3.0.jar` kommt zusammen mit der passenden
+4. Die tatsächlich gebaute `pixelguide-0.3.2.jar` kommt zusammen mit der passenden
    Fabric API in den **clientseitigen** Minecraft-`mods`-Ordner.
 
 **Bei einem roten Build ist die Mod noch nicht bereit.** Die Logausgabe zeigt dann
@@ -77,3 +77,27 @@ umbenannte ZIP-Datei als JAR verwenden.
 - `src/client/resources/assets/pixelguide/plan.bin`: originaler 96×96-Bauplan.
 - `materialbedarf.csv`: initialer Überblick pro Farbe mit Stapelzahlen.
 - `.github/workflows/build.yml`: automatischer Build-Versuch.
+
+## Render-Absturz beim Aktivieren mit H – Korrektur v0.3.2
+
+Die bisherige Implementierung hat innerhalb von
+`LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN` einen eigenen `RenderPass`
+mit `RenderSystem.getDevice().createCommandEncoder().createRenderPass(...)`
+geöffnet. In Minecraft 26.3 kann die GPU dort bereits einen aktiven Render-Pass
+haben, wodurch `IllegalStateException: Close the existing render pass before
+performing additional commands` entsteht.
+
+`GhostRenderer.java` wurde deshalb auf `LevelRenderEvents.COLLECT_SUBMITS`
+und `context.submitNodeCollector().submitCustomGeometry(...)` umgestellt.
+Minecrafts Feature-Renderer führt die GPU-Operationen aus. Die eingefärbten
+Quads verwenden `RenderTypes.debugFilledBox()` (Position + Farbe), statt
+manuell eigene Render-Passes zu erzeugen.
+
+Der Java-Code wurde statisch kontrolliert; ein tatsächlicher Build sowie ein
+Start in Minecraft waren in dieser Umgebung nicht möglich. Bitte über GitHub
+Actions kompilieren, **nur eine** `pixelguide-*.jar` im `mods`-Ordner lassen,
+eine Sicherung der Welt anlegen und die Hologramm-Vorschau testen.
+
+Sollte wieder ein Absturz auftreten, bitte `crash-reports/*.txt` oder
+`logs/latest.log` mit Stacktrace schicken. Für diesen Fehler ist die
+Fabric-Loader-Version 0.19.5 grundsätzlich passend.
