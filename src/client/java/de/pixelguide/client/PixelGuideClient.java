@@ -8,7 +8,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
 public final class PixelGuideClient implements ClientModInitializer {
@@ -20,7 +20,7 @@ public final class PixelGuideClient implements ClientModInitializer {
 
     private static int ticks = 0;
     private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(
-        ResourceLocation.fromNamespaceAndPath("pixelguide", "main")
+        Identifier.fromNamespaceAndPath("pixelguide", "main")
     );
     private static KeyMapping toggleKey;
     private static KeyMapping paletteKey;
@@ -30,12 +30,12 @@ public final class PixelGuideClient implements ClientModInitializer {
     public void onInitializeClient() {
         preferences = Preferences.load();
         toggleKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.pixelguide.toggle", InputConstants.Type.KEYSYM, InputConstants.KEY_H, CATEGORY));
+            "key.pixelguide.toggle", InputConstants.Type.KEYBOARD, InputConstants.KEY_H, CATEGORY));
         paletteKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.pixelguide.palette", InputConstants.Type.KEYSYM, InputConstants.KEY_J, CATEGORY));
+            "key.pixelguide.palette", InputConstants.Type.KEYBOARD, InputConstants.KEY_J, CATEGORY));
 
         materialsKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.pixelguide.materials", InputConstants.Type.KEYSYM, InputConstants.KEY_K, CATEGORY));
+            "key.pixelguide.materials", InputConstants.Type.KEYBOARD, InputConstants.KEY_K, CATEGORY));
 
         GhostRenderer.register();
         ClientTickEvents.END_CLIENT_TICK.register(PixelGuideClient::onTick);
@@ -45,16 +45,16 @@ public final class PixelGuideClient implements ClientModInitializer {
         if (client.player == null || client.level == null) return;
         while (toggleKey.consumeClick()) {
             enabled = !enabled;
-            client.player.displayClientMessage(Component.literal(
-                "§d[PixelGuide] §fHologramm: " + (enabled ? "§aAN" : "§cAUS") + " §7| J: Blöcke | K: Bedarf"), false);
+            client.player.sendSystemMessage(Component.literal(
+                "§d[PixelGuide] §fHologramm: " + (enabled ? "§aAN" : "§cAUS") + " §7| J: Blöcke | K: Bedarf"));
         }
         while (paletteKey.consumeClick()) {
-            if (client.screen == null) client.setScreen(new PaletteScreen());
+            if (client.gui.screen() == null) client.gui.setScreen(new PaletteScreen());
         }
         while (materialsKey.consumeClick()) {
-            if (client.screen == null) client.setScreen(new MaterialScreen());
+            if (client.gui.screen() == null) client.gui.setScreen(new MaterialScreen());
         }
-        if (!enabled || client.screen != null) return;
+        if (!enabled || client.gui.screen() != null) return;
 
         ticks++;
         if (ticks % 40 == 0) {
@@ -78,7 +78,7 @@ public final class PixelGuideClient implements ClientModInitializer {
                 info = "§dPixelGuide §f" + correctlyBuilt + "/" + Plan.TOTAL
                     + " §7richtig | §c" + incorrectlyBuilt + " §7falsch | §fJ: Palette | K: Bedarf";
             }
-            client.player.displayClientMessage(Component.literal(info), true);
+            client.player.sendOverlayMessage(Component.literal(info));
         }
     }
 

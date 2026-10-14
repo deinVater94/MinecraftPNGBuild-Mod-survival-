@@ -1,7 +1,7 @@
 package de.pixelguide.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -120,9 +120,9 @@ public final class PaletteScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
-        graphics.drawCenteredString(font, title, width / 2, layoutTop - 10, 0xFFFFFFFF);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        graphics.centeredText(font, title, width / 2, layoutTop - 10, 0xFFFFFFFF);
         for (int j = 0; j < COLORS_PER_PAGE; j++) {
             int idx = colorPage * COLORS_PER_PAGE + j;
             if (idx >= Palette.COLORS.length) break;
@@ -131,13 +131,13 @@ public final class PaletteScreen extends Screen {
         }
         int pages = Math.max(1,
             (PixelGuideClient.preferences.candidates(selected).size() + MATERIALS_PER_PAGE - 1) / MATERIALS_PER_PAGE);
-        graphics.drawString(font, "Materialien: " + Palette.COLORS[selected].name(), rightX, layoutTop + 3, 0xFFFFFFFF);
-        graphics.drawString(font, "Seite " + (materialPage + 1) + "/" + pages,
+        graphics.text(font, "Materialien: " + Palette.COLORS[selected].name(), rightX, layoutTop + 3, 0xFFFFFFFF);
+        graphics.text(font, "Seite " + (materialPage + 1) + "/" + pages,
             rightX + rightWidth - 48, layoutTop + 105, 0xFFDDDDDD);
-        graphics.drawString(font, "Eigene Block-ID (auch Mod-Blöcke):", rightX, layoutTop + 136, 0xFFB7B7B7);
-        graphics.drawString(font, feedback.isEmpty() ? "Alle Vorschläge zählen als richtig." : feedback,
+        graphics.text(font, "Eigene Block-ID (auch Mod-Blöcke):", rightX, layoutTop + 136, 0xFFB7B7B7);
+        graphics.text(font, feedback.isEmpty() ? "Alle Vorschläge zählen als richtig." : feedback,
             rightX, layoutTop + 194, 0xFFD5E6D7);
-        graphics.drawString(font, PixelGuideClient.correctlyBuilt + "/" + Plan.TOTAL + " richtig gebaut",
+        graphics.text(font, PixelGuideClient.correctlyBuilt + "/" + Plan.TOTAL + " richtig gebaut",
             rightX, layoutTop + 210, 0xFF96DC90);
     }
 }

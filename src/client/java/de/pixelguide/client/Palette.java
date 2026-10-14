@@ -1,7 +1,7 @@
 package de.pixelguide.client;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -33,14 +33,14 @@ public final class Palette {
     private Palette() { }
 
     public static Block block(String blockId) {
-        return BuiltInRegistries.BLOCK.getValue(ResourceLocation.parse(blockId));
+        return BuiltInRegistries.BLOCK.getValue(Identifier.parse(blockId));
     }
 
     /** Input may omit the minecraft: namespace; reject invalid/nonexistent blocks. */
     public static String validBlockId(String entered) {
         if (entered == null || entered.isBlank()) return null;
         try {
-            ResourceLocation id = ResourceLocation.parse(entered.trim().toLowerCase(java.util.Locale.ROOT));
+            Identifier id = Identifier.parse(entered.trim().toLowerCase(java.util.Locale.ROOT));
             if (!BuiltInRegistries.BLOCK.containsKey(id)) return null;
             String key = id.toString();
             if (key.equals("minecraft:air") || key.equals("minecraft:cave_air")
