@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "pixelguide",
+  "version": "${version}",
+  "name": "PixelGuide – Pixel-Art Bauhilfe",
+  "description": "Vollstaendig clientseitige Bauvorschau fuer ein 96x96 Pixel-Art-Bild mit mehreren Blockvorschlaegen pro Farbe.",
+  "authors": ["PixelGuide Projekt"],
+  "environment": "client",
+  "entrypoints": {
+    "client": ["de.pixelguide.client.PixelGuideClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
